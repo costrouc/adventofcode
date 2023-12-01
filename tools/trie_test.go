@@ -1,4 +1,4 @@
-package days
+package tools
 
 import (
 	"testing"

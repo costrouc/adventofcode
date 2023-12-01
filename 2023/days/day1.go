@@ -3,6 +3,8 @@ package days
 import (
 	"bufio"
 	"os"
+
+	"github.com/costrouc/adventofcode/tools"
 )
 
 func Day1Part1(path string) int {
@@ -58,9 +60,9 @@ func ScoreLines(path string, dictionary map[string]int) int {
 	}
 	reader := bufio.NewReader(file)
 
-	trie := NewTrie()
-	oldTriePositions := []*Trie{}
-	newTriePositions := []*Trie{}
+	trie := tools.NewTrie()
+	oldTriePositions := []*tools.Trie{}
+	newTriePositions := []*tools.Trie{}
 
 	for word := range dictionary {
 		trie.Set(word, dictionary[word])
@@ -109,7 +111,7 @@ func ScoreLines(path string, dictionary map[string]int) int {
 		}
 
 		oldTriePositions = newTriePositions
-		newTriePositions = []*Trie{}
+		newTriePositions = []*tools.Trie{}
 	}
 
 	return totalSum

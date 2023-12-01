@@ -1,4 +1,4 @@
-package days
+package tools
 
 type Trie struct {
 	Runes    map[rune]*Trie
