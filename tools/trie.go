@@ -1,5 +1,9 @@
 package tools
 
+import (
+	"io"
+)
+
 type Trie struct {
 	Runes    map[rune]*Trie
 	Terminal bool
@@ -41,4 +45,26 @@ func (t *Trie) Get(key string) int {
 
 func (t *Trie) Next(r rune) *Trie {
 	return t.Runes[r]
+}
+
+// Note this function always give the shortest match
+// So this function currently has issues if any word
+// is a subset of the others
+func (t *Trie) NextMatch(r io.RuneReader) int {
+	ct := t
+	for !ct.Terminal {
+		r, _, err := r.ReadRune()
+		if err == io.EOF {
+			return -1
+		} else if err != nil {
+			panic(err)
+		}
+
+		ct = ct.Next(r)
+		if ct == nil {
+			ct = t
+		}
+	}
+
+	return ct.Value
 }

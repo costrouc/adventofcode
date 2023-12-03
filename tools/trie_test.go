@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"bytes"
+	"fmt"
 	"testing"
 )
 
@@ -45,5 +47,27 @@ func TestTrieSetGetNext(t *testing.T) {
 		if ct.Value != value {
 			t.Errorf("Trie get for 'and' didn't get expected value %v, got %v", value, trie.Get(word))
 		}
+	}
+}
+
+func TestTrieSetGetNextMatch(t *testing.T) {
+	dictionary := map[string]int{
+		"the": 1,
+		"and": 2,
+		"a":   3,
+	}
+	trie := NewTrie()
+	for word, value := range dictionary {
+		trie.Set(word, value)
+	}
+
+	line := []byte("the quick brown fox and bunny")
+	reader := bytes.NewReader(line)
+	for {
+		token := trie.NextMatch(reader)
+		if token == -1 {
+			break
+		}
+		fmt.Println(token)
 	}
 }
