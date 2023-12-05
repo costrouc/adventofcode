@@ -104,19 +104,18 @@ func Day5Part1(path string) int {
 
 func Day5Part2(path string) int {
 	seedMaps, seeds := ParseAlminac(path)
-	// fmt.Println(seedMaps, seeds)
 
 	minLocation := math.MaxInt64
 	for i := 0; i < len(seeds)/2; i++ {
-		fmt.Println("seed", i)
+		fmt.Println("seed", seeds[i*2])
 		for seed := seeds[i*2]; seed < seeds[i*2]+seeds[i*2+1]; seed++ {
-			v := []int{seed}
-			for i, seedMap := range seedMaps {
-				v = append(v, CalculateMapping(seedMap.Ranges, v[i]))
+			l := seed
+			for _, seedMap := range seedMaps {
+				l = CalculateMapping(seedMap.Ranges, l)
 			}
 
-			if v[len(v)-1] < minLocation {
-				minLocation = v[len(v)-1]
+			if l < minLocation {
+				minLocation = l
 			}
 		}
 	}
