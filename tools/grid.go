@@ -22,7 +22,7 @@ func NewGrid[T any](rows int, columns int) *Grid[T] {
 func (g *Grid[T]) Index(p Pair) int {
 	row := (((p.I % g.Rows) + g.Rows) % g.Rows)
 	column := (((p.J % g.Columns) + g.Columns) % g.Columns)
-	return row*g.Rows + column
+	return row*g.Columns + column
 }
 
 func (g *Grid[T]) Get(p Pair) T {
@@ -74,4 +74,12 @@ func (g *Grid[T]) Neighbors(p Pair, orthogonal bool, diagonal bool, periodic boo
 	}
 
 	return values
+}
+
+func (p *Pair) Subtract(other Pair) Pair {
+	return Pair{I: p.I - other.I, J: p.J - other.J}
+}
+
+func (p *Pair) Add(other Pair) Pair {
+	return Pair{I: p.I + other.I, J: p.J + other.J}
 }

@@ -46,17 +46,17 @@ func TestGridIndexPeriodic(t *testing.T) {
 }
 
 func TestGridSetGet(t *testing.T) {
-	grid := NewGrid[int](3, 3)
+	grid := NewGrid[int](3, 4)
 	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
-			grid.Set(Pair{I: i, J: j}, i*3+j)
+		for j := 0; j < 4; j++ {
+			grid.Set(Pair{I: i, J: j}, i*4+j)
 		}
 	}
 
 	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
+		for j := 0; j < 4; j++ {
 			value := grid.Get(Pair{I: i, J: j})
-			expectedValue := i*3 + j
+			expectedValue := i*4 + j
 			if value != expectedValue {
 				t.Errorf("Grid item: %v, %v expected %v got %v", i, j, value, expectedValue)
 			}
