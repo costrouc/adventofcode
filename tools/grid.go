@@ -83,3 +83,15 @@ func (p *Pair) Subtract(other Pair) Pair {
 func (p *Pair) Add(other Pair) Pair {
 	return Pair{I: p.I + other.I, J: p.J + other.J}
 }
+
+func (p *Pair) Abs() Pair {
+	i, j := p.I, p.J
+	if i < 0 {
+		i = -i
+	}
+	if j < 0 {
+		j = -j
+	}
+
+	return Pair{I: i, J: j}
+}
