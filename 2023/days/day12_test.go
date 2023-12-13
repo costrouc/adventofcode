@@ -35,6 +35,13 @@ func TestDay12Part2Example2(t *testing.T) {
 	t.Errorf("Day12Part2 Example2 %v", result)
 }
 
+func BenchmarkDay12Part2Example2(b *testing.B) {
+	path := filepath.Join("..", "puzzles", "day12-example2.txt")
+	for i := 0; i < b.N; i++ {
+		Day12Part2(path)
+	}
+}
+
 func TestDay12Part2Input2(t *testing.T) {
 	path := filepath.Join("..", "puzzles", "day12-input1.txt")
 	result := Day12Part2(path)

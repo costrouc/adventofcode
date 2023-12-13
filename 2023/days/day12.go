@@ -37,105 +37,120 @@ func ParseRecords(path string) []Record {
 	return records
 }
 
-func ValidateRecord(record Record, combination int) bool {
+func ValidateRecord(record *Record, recordGuess []int) (bool, int) {
 	currentDamagedStreak := 0
-	location := 0
-	index := 0
+	groupIndex := 0
+	guessLocation := 0
 
 	for i := 0; i < len(record.Entries); i++ {
 		switch record.Entries[i] {
 		case '.':
 			if currentDamagedStreak > 0 {
-				if currentDamagedStreak != record.Groups[index] {
-					return false
+				if currentDamagedStreak != record.Groups[groupIndex] {
+					return false, guessLocation
 				}
 				currentDamagedStreak = 0
-				index++
+				groupIndex++
 			}
 		case '#':
-			if index == len(record.Groups) {
-				return false
+			if groupIndex == len(record.Groups) {
+				return false, guessLocation
 			}
 
 			currentDamagedStreak++
 
-			if currentDamagedStreak > record.Groups[index] {
-				return false
+			if currentDamagedStreak > record.Groups[groupIndex] {
+				return false, guessLocation
 			}
 		case '?':
-			if combination&(1<<location) == 0 { // .
+			if recordGuess[guessLocation] == 0 { // .
 				if currentDamagedStreak > 0 {
-					if currentDamagedStreak != record.Groups[index] {
-						return false
+					if currentDamagedStreak != record.Groups[groupIndex] {
+						return false, guessLocation
 					}
 					currentDamagedStreak = 0
-					index++
+					groupIndex++
 				}
 			} else { // #
-				if index == len(record.Groups) {
-					return false
+				if groupIndex == len(record.Groups) {
+					return false, guessLocation
 				}
 
 				currentDamagedStreak++
 
-				if currentDamagedStreak > record.Groups[index] {
-					return false
+				if currentDamagedStreak > record.Groups[groupIndex] {
+					return false, guessLocation
 				}
 			}
 
-			location++
+			guessLocation++
 		}
 	}
 
 	// must have gone through every group
-	if currentDamagedStreak == 0 && index != len(record.Groups) {
-		return false
+	if currentDamagedStreak == 0 && groupIndex != len(record.Groups) {
+		return false, guessLocation
 	}
 
 	// if there is a damaged streak at the end, it must match the last group
-	if currentDamagedStreak > 0 && (index != len(record.Groups)-1 || currentDamagedStreak != record.Groups[index]) {
-		return false
+	if currentDamagedStreak > 0 && (groupIndex != len(record.Groups)-1 || currentDamagedStreak != record.Groups[groupIndex]) {
+		return false, guessLocation
 	}
 
-	return true
+	return true, guessLocation
+}
+
+func PartialRecordCombinations(record *Record, guess []int, index int) int {
+	valid, location := ValidateRecord(record, guess)
+	if index == len(guess) && valid {
+		return 1
+	} else if index == len(guess) {
+		return 0
+	} else if location < index {
+		return 0
+	}
+
+	total := 0
+	guess[index] = 0
+	total += PartialRecordCombinations(record, guess, index+1)
+
+	guess[index] = 1
+	total += PartialRecordCombinations(record, guess, index+1)
+	return total
 }
 
 func RecordCombinations(record Record) int {
-	locations := []int{}
+	locations := 0
 	for i := 0; i < len(record.Entries); i++ {
 		switch record.Entries[i] {
 		case '?':
-			locations = append(locations, i)
+			locations++
 		}
 	}
-
-	validCombinations := 0
-	totalCombinations := 1 << len(locations)
-	for i := 0; i < totalCombinations; i++ {
-		valid := ValidateRecord(record, i)
-		if valid {
-			validCombinations++
-		}
-	}
-	return validCombinations
+	recordGuess := make([]int, locations)
+	return PartialRecordCombinations(&record, recordGuess, 0)
 }
 
 func Day12Part1(path string) int {
 	records := ParseRecords(path)
 	total := 0
 	for _, record := range records {
-		total += RecordCombinations(record)
+		result := RecordCombinations(record)
+		total += result
 	}
 	return total
 }
 
 func MulFiveRecord(record Record) Record {
+	n := 5
 	groups := []int{}
-	for i := 0; i < 5; i++ {
+	entities := []string{}
+	for i := 0; i < n; i++ {
 		groups = append(groups, record.Groups...)
+		entities = append(entities, string(record.Entries))
 	}
 	return Record{
-		Entries: []rune(strings.Repeat(string(record.Entries), 5)),
+		Entries: []rune(strings.Join(entities, "?")),
 		Groups:  groups,
 	}
 }
